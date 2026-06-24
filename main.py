@@ -10,7 +10,7 @@ class AgentUI(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(orientation="vertical", **kwargs)
 
-        self.api_key_input = TextInput(hint_text="Paste your Anthropic API key", size_hint_y=0.1, password=True)
+        self.api_key_input = TextInput(hint_text="Paste your NVIDIA API key (nvapi-...)", size_hint_y=0.1, password=True)
         self.goal_input = TextInput(hint_text="What do you want the agent to do?", size_hint_y=0.15)
         run_btn = Button(text="Run Agent", size_hint_y=0.1)
         run_btn.bind(on_press=self.run_agent)
@@ -35,22 +35,21 @@ class AgentUI(BoxLayout):
         self.output_label.text = "Thinking..."
         try:
             response = requests.post(
-                "https://api.anthropic.com/v1/messages",
+                "https://integrate.api.nvidia.com/v1/chat/completions",
                 headers={
-                    "x-api-key": api_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
                 },
                 json={
-                    "model": "claude-sonnet-4-6",
-                    "max_tokens": 1000,
+                    "model": "openai/gpt-oss-120b",
                     "messages": [{"role": "user", "content": goal}],
+                    "max_tokens": 1000,
                 },
                 timeout=30,
             )
             data = response.json()
-            text = "".join(block.get("text", "") for block in data.get("content", []))
-            self.output_label.text = text or str(data)
+            text = data["choices"][0]["message"]["content"]
+            self.output_label.text = text
         except Exception as e:
             self.output_label.text = f"Error: {e}"
 
