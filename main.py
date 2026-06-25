@@ -10,7 +10,7 @@ class AgentUI(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(orientation="vertical", **kwargs)
 
-        self.api_key_input = TextInput(hint_text="Paste your NVIDIA API key (nvapi-...)", size_hint_y=0.1, password=True)
+        self.api_key_input = TextInput(hint_text="Paste your Cerebras API key (csk-...)", size_hint_y=0.1, password=True)
         self.goal_input = TextInput(hint_text="What do you want the agent to do?", size_hint_y=0.15)
         run_btn = Button(text="Run Agent", size_hint_y=0.1)
         run_btn.bind(on_press=self.run_agent)
@@ -35,13 +35,13 @@ class AgentUI(BoxLayout):
         self.output_label.text = "Thinking..."
         try:
             response = requests.post(
-                "https://integrate.api.nvidia.com/v1/chat/completions",
+                "https://api.cerebras.ai/v1/chat/completions",
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": "openai/gpt-oss-120b",
+                    "model": "gpt-oss-120b",
                     "messages": [{"role": "user", "content": goal}],
                     "max_tokens": 1000,
                 },
