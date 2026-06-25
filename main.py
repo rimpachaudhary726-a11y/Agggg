@@ -48,8 +48,10 @@ class AgentUI(BoxLayout):
                 timeout=30,
             )
             data = response.json()
-            text = data["choices"][0]["message"]["content"]
-            self.output_label.text = text
+            if "choices" in data:
+                self.output_label.text = data["choices"][0]["message"]["content"]
+            else:
+                self.output_label.text = f"API Error ({response.status_code}): {data}"
         except Exception as e:
             self.output_label.text = f"Error: {e}"
 
